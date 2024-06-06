@@ -1,0 +1,45 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Payment {
+  amount    Float?
+  createdAt DateTime           @default(now())
+  id        String             @id @default(cuid())
+  smsItems  Sms[]
+  status    EnumPaymentStatus?
+  trxId     String?
+  updatedAt DateTime           @updatedAt
+}
+
+model Sms {
+  createdAt         DateTime  @default(now())
+  id                String    @id @default(cuid())
+  message           String?
+  payment           Payment?  @relation(fields: [paymentId], references: [id])
+  paymentId         String?
+  receivedAt        DateTime?
+  senderPhoneNumber String?
+  updatedAt         DateTime  @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumPaymentStatus {
+  Option1
+}
